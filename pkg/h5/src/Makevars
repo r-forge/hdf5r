@@ -1,0 +1,20 @@
+PKG_LIBS += libhdf5.a -lz -lm -L.
+PKG_LIBS += libhdf5_hl.a libhdf5_hl_cpp.a libhdf5_cpp.a
+
+PKG_CPPFLAGS += -I../inst/include -Ihdf5/c++/src -Ihdf5/hl/c++/src -Ihdf5/src -Ihdf5/src/.libs
+PKG_LIBS += $(RCPP_LDFLAGS)
+
+.PHONY: all
+
+all: $(SHLIB)
+$(SHLIB): libhdf5.a libhdf5_hl.a libhdf5_hl_cpp.a libhdf5_cpp.a
+libhdf5.a libhdf5_cpp.a libhdf5_hl_cpp.a:
+	cd hdf5 && \
+	   ./configure CC="${CC}" CPP="${CPP}" CXX="${CXX}" CXXCPP="${CXXCPP}" F77="${F77}" --build="${R_ARCH#*/}" --with-pic --enable-cxx --enable-production
+	cd hdf5 && \
+	   $(MAKE) all
+	cp hdf5/src/.libs/libhdf5.a .
+	cp hdf5/c++/src/.libs/libhdf5_cpp.a .
+	cp hdf5/hl/c++/src/.libs/libhdf5_hl_cpp.a .
+	cp hdf5/hl/src/.libs/libhdf5_hl.a .
+	
